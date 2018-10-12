@@ -1,5 +1,5 @@
 import logging
-logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s")
+logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", filename="log", level=logging.INFO)
 import json
 from datetime import date, datetime, timedelta
 import argparse
@@ -41,7 +41,7 @@ def mapper(doc):
 
 
 def main(start_date, end_date):
-    logging.error(
+    logging.info(
         "Starting: {} - {}...".format(start_date, end_date),
         extra={})
     current_date = start_date
@@ -49,7 +49,7 @@ def main(start_date, end_date):
     try:
         while current_date <= end_date:
             total_docs += process_date(current_date)
-            logging.error("processing %s total docs processed %i" % (str(current_date), total_docs))
+            logging.info("processing %s total docs processed %i" % (str(current_date), total_docs))
             current_date += timedelta(days=1)
     except Exception as e:
         logging.exception(e)
@@ -105,7 +105,7 @@ def process_date(current_date):
                 updates.append(exploded)
         mongo_collection.insert(updates)
         total_docs += len(doc_batch)
-        logging.error("docs in day %i" % total_docs)
+        logging.info("docs in day %i" % total_docs)
     return total_docs
 
 
