@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+sigmai-elastic-client = {git = "ssh://git@github.com/SigmaNewsVenturesGroupLtd/sigmai-elastic-client.git", editable = true, ref = "v50"}
+"elasticsearch2" = "*"
+python-dateutil = "*"
+requests = "*"
+pymongo = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

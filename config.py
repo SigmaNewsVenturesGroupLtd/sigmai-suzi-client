@@ -1,0 +1,5 @@
+MONGO_DB = "suzi_scores"
+MONGO_COLLECTION = "suzi_scores"
+MONGO_HOST = "sixteencorea"
+ES_HOST = "elasticsearch08"
+ES_INDEX = "equity_analysis"
