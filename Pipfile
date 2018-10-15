@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 sigmai-elastic-client = {git = "ssh://git@github.com/SigmaNewsVenturesGroupLtd/sigmai-elastic-client.git", editable = true, ref = "v50"}
+sigmai-suzi = {git = "ssh://git@github.com/SigmaNewsVenturesGroupLtd/sigmai-suzi", editable = true, ref = "v19"}
 "elasticsearch2" = "*"
 python-dateutil = "*"
-requests = "*"
 pymongo = "*"
 
 [dev-packages]

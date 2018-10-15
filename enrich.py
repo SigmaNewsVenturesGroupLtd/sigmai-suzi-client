@@ -11,7 +11,7 @@ from dateutil import parser
 from elasticsearch2 import Elasticsearch
 from itertools import islice, chain
 from config import *
-
+from suzi_inferer import score_articles
 es_index = ES_INDEX
 
 mongo_client = pymongo.MongoClient(MONGO_HOST, tz_aware=True)
@@ -82,22 +82,22 @@ def process_date(current_date):
             }
         }
     }
+    batch_size = 10000
     scroller = elastic.scroll(
         Elasticsearch(hosts=[ES_HOST], timeout=120, max_retries=10, retry_on_timeout=True),
         index=ES_INDEX,
         body=query,
-        size=1000)
+        clear_scroll=False,
+        size=batch_size)
     docs = elastic.scroll_docs_mapped(scroller, mapper)
-    for doc_batch in batch(docs, 1000):
+    for doc_batch in batch(docs, batch_size):
         doc_batch = list(doc_batch)
         suzi_input = [
             {'title': d['title'], 'snip': d['snip']} for d in doc_batch
         ]
-        headers = {'Content-Type': "application/json"}
-        response = requests.post(url, data=json.dumps(suzi_input), headers=headers)
-        events = response.json()
+        events = score_articles(suzi_input)
         updates = []
-        for doc, doc_events in zip(doc_batch, events['results']):
+        for doc, doc_events in zip(doc_batch, events):
             for company_events in doc_events['events']:
                 exploded = doc.copy()
                 exploded['company_id'] = company_events['company_id']
