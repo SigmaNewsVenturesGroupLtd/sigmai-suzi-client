@@ -1,17 +1,15 @@
 import logging
-logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", filename="log", level=logging.INFO)
-import json
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import argparse
 
 import pymongo
-import requests
 import sigmai.elastic.elastic as elastic
 from dateutil import parser
 from elasticsearch2 import Elasticsearch
 from itertools import islice, chain
 from config import *
 from suzi_inferer import score_articles
+
 es_index = ES_INDEX
 
 mongo_client = pymongo.MongoClient(MONGO_HOST, tz_aware=True)
@@ -82,11 +80,12 @@ def process_date(current_date):
             }
         }
     }
-    batch_size = 10000
+    batch_size = 2000
     scroller = elastic.scroll(
         Elasticsearch(hosts=[ES_HOST], timeout=120, max_retries=10, retry_on_timeout=True),
         index=ES_INDEX,
         body=query,
+        scroll='2m',
         clear_scroll=False,
         size=batch_size)
     docs = elastic.scroll_docs_mapped(scroller, mapper)
@@ -115,6 +114,8 @@ if __name__ == '__main__':
     arg_parser.add_argument("-s", "--start-date", help="Start from date", default=yesterday_string)
     arg_parser.add_argument("-e", "--end-date", help="Run to date", default=yesterday_string)
     args = arg_parser.parse_args()
+    logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s",
+                        filename="log-%s-%s" % (args.start_date, args.end_date), level=logging.INFO)
     arg_start_date = datetime.strptime(args.start_date, '%Y%m%d').date()
     arg_end_date = datetime.strptime(args.end_date, '%Y%m%d').date()
     main(arg_start_date, arg_end_date)
