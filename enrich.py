@@ -102,7 +102,8 @@ def process_date(current_date):
                 exploded['company_id'] = company_events['company_id']
                 exploded['sdr_scores'] = company_events['scores']
                 updates.append(exploded)
-        mongo_collection.insert(updates)
+        if len(updates) > 0:
+            mongo_collection.insert(updates)
         total_docs += len(doc_batch)
         logging.info("docs in day %i" % total_docs)
     return total_docs
